@@ -71,8 +71,22 @@ WHERE area >= 300000
     AND population >= 25000000;
 
 --BAI 12
+SELECT DISTINCT author_id AS id
+FROM Views
+WHERE author_id = viewer_id
+ORDER BY author_id ASC;
 
 --BAI 13
+SELECT part, assembly_step 
+FROM parts_assembly
+WHERE finish_date IS NULL;
+
 --BAI 14
+select * from lyft_drivers
+WHERE yearly_salary <= 30000 OR yearly_salary >= 70000;
+
 --BAI 15
+select advertising_channel
+from uber_advertising
+WHERE money_spent >100000 AND year = 2019
 
