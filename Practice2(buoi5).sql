@@ -29,3 +29,22 @@ WHERE  post_date BETWEEN '2021-01-01' AND '2021-12-31'
 GROUP BY user_id
 HAVING COUNT (post_id) >= 2;
 
+--bai 7
+SELECT 
+card_name,
+max(issued_amount) - min(issued_amount) as numdiff
+FROM monthly_cards_issued
+GROUP BY card_name
+
+--bai 8
+SELECT 
+manufacturer
+, abs (sum(total_sales  - cogs) )as loss
+FROM pharmacy_sales
+WHERE (total_sales)<(cogs) 
+GROUP BY manufacturer
+ORDER BY abs (sum ((total_sales)-(cogs))) DESC
+
+--bai 9
+
+
