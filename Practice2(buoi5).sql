@@ -22,3 +22,10 @@ END ) = 3
 
 
 --bai 6
+SELECT 
+  user_id , date_part ('day', Max(post_date) - Min(post_date)) AS DAYS
+FROM posts
+WHERE  post_date BETWEEN '2021-01-01' AND '2021-12-31'
+GROUP BY user_id
+HAVING COUNT (post_id) >= 2;
+
