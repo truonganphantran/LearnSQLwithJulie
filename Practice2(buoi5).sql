@@ -46,5 +46,31 @@ GROUP BY manufacturer
 ORDER BY abs (sum ((total_sales)-(cogs))) DESC
 
 --bai 9
+SELECT
+    id
+    , movie
+    , description
+    , round (rating, 2) as rating
+FROM Cinema
+WHERE mod (id, 2) = 1 
+    and description not like '%boring%'
+ORDER BY rating DESC
 
+--BÀI 10
+SELECT teacher_id, 
+COUNT (DISTINCT subject_id) AS cnt
+FROM teacher
+group by teacher_id
+
+--bai 11
+SELECT teacher_id, 
+COUNT (DISTINCT subject_id) AS cnt
+FROM teacher
+group by teacher_id
+
+--BAI 12
+select CLASS
+from courses
+GROUP BY CLASS
+HAVING COUNT (STUDENT) >= 5
 
