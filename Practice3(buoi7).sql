@@ -1,2 +1,14 @@
 --bai 1
+SELECT NAME
+FROM STUDENTS
+WHERE MARKS > 75
+ORDER BY RIGHT(NAME,3), ID ASC;
+
+--bai 2
+SELECT user_id 
+  , CONCAT( UPPER (LEFT( LOWER (name),1)) , RIGHT( LOWER (name),LENGTH (name)-1)) AS name
+FROM Users
+ORDER BY user_id;
+
+
 
