@@ -43,5 +43,33 @@ SELECT
 FROM Tweets
 WHERE LENGTH (content) >15;
 
+--bai 7
+SELECT 
+activity_date AS day
+, count(DISTINCT user_id) as active_users
+FROM Activity
+GROUP BY activity_date
+HAVING activity_date > '2019-06-27'
+
+--BAI 8
+select 
+EXTRACT (MONTH FROM joining_date ) AS month
+, COUNT (id) AS number_hire 
+from employees
+GROUP BY EXTRACT (MONTH FROM joining_date)
+HAVING EXTRACT (MONTH FROM joining_date) BETWEEN 1 AND 6;
+
+--bai 9
+select 
+first_name,
+POSITION ('a' IN first_name)
+from worker
+WHERE first_name = 'Amitah';
+
+-bai 10
+select 
+winery ,
+SUBSTRING (title FROM LENGTH(winery) +2 FOR 4) AS YEAR
+from winemag_p2;
 
 
