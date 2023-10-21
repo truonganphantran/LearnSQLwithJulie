@@ -29,6 +29,33 @@ GROUP BY pro.product_id, product_category
 ORDER BY pro.product_id;
 
 -bai 5
+SELECT  
+      emp.employee_id
+      , emp.name
+      ,COUNT(CASE WHEN report_.reports_to IS NOT NULL THEN emp.employee_id END) AS reports_count 
+      , ROUND (AVG(CASE WHEN report_.reports_to IS NOT NULL THEN report_.age END), 0) AS average_age
+      FROM EMPLOYEES AS emp
+INNER JOIN EMPLOYEES AS report_
+ON emp.employee_id = report_.reports_to
+GROUP BY employee_id;
+
+--BÀI 6
+SELECT 
+    products.product_name
+    , SUM(unit) AS TOTAL_UNIT
+FROM products
+INNER JOIN Orders
+ON products.product_id = orders.product_id
+WHERE EXTRACT(MONTH FROM order_date) = 2
+GROUP BY product_name
+HAVING SUM(unit) >= 100
+
+--BÀI 7
+SELECT pages.page_id 
+FROM page_likes
+ FULL OUTER JOIN pages
+ON page_likes.page_id = pages.page_id
+WHERE liked_date IS NULL;
 
 
 
