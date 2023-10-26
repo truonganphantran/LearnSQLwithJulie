@@ -10,13 +10,15 @@ with CTE1 AS (SELECT
      EXTRACT(MONTH FROM event_date) AS month
     , COUNT(DISTINCT user_id) as count 
 FROM user_actions
-WHERE  EXTRACT(MONTH FROM event_date) = 7
+WHERE  EXTRACT(MONTH FROM event_date) IN (6, 7)
    GROUP BY user_id, EXTRACT(MONTH FROM event_date)
    HAVING COUNT(user_id) > 1) 
+
 select month
       ,count (count)
 FROM CTE1
 GROUP BY month
+
 
 
 --bài 6
