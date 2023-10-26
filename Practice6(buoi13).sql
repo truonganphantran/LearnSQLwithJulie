@@ -8,17 +8,16 @@ WHERE liked_date IS NULL;
 --bài 5
 with CTE1 AS (SELECT  
      EXTRACT(MONTH FROM event_date) AS month
-    , COUNT(DISTINCT user_id) as count 
+    ,  user_id 
 FROM user_actions
-WHERE  EXTRACT(MONTH FROM event_date) IN (6, 7)
+WHERE  EXTRACT(MONTH FROM event_date) BETWEEN 6 AND 7
    GROUP BY user_id, EXTRACT(MONTH FROM event_date)
    HAVING COUNT(user_id) > 1) 
-
-select month
-      ,count (count)
+select 
+  (CASE WHEN month < 8 THEN 7 END ) AS monthh
+      ,count (distinct user_id )
 FROM CTE1
-GROUP BY month
-
+GROUP BY (CASE WHEN month < 8 THEN 7 END ) 
 
 
 --bài 6
