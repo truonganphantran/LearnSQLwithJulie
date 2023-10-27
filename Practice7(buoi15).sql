@@ -8,3 +8,7 @@ SELECT
 FROM user_transactions;
 
 --BÀI 2
+SELECT
+card_name,
+FIRST_VALUE(issued_amount) OVER(PARTITION BY card_name ORDER BY issue_year, issue_month) AS amount
+FROM monthly_cards_issued
