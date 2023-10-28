@@ -28,4 +28,32 @@ FROM  (SELECT
 FROM transactions) AS subtable
 WHERE thutu = '3';
 
---
+--bài 4
+SELECT *
+FROM (
+SELECT 
+  FIRST_VALUE(transaction_date) OVER(PARTITION BY user_id ORDER BY transaction_date DESC) as trans_date
+  , user_id
+  , COUNT(product_id) OVER (PARTITION BY user_id) as purchase_count
+FROM user_transactions) AS subtable
+GROUP BY user_id, trans_date, purchase_count
+
+--BÀI 5
+WITH CTE1 AS (SELECT 
+  user_id
+  , tweet_date
+  , tweet_count
+  , LAG(tweet_count) OVER(PARTITION BY user_id ORDER BY tweet_date) AS count_1
+  ,LAG(tweet_count,2) OVER(PARTITION BY user_id ORDER BY tweet_date) AS COUNT_2
+FROM tweets)
+SELECT user_id
+  , tweet_date
+  , tweet_count
+  , CASE WHEN count_1 IS NULL THEN tweet_count
+         WHEN count_2 IS NULL THEN ROUND (CAST((count_1+tweet_count) AS DECIMAL)/2,2)
+         ELSE ROUND (CAST((tweet_count+count_1+count_2) AS DECIMAL)/3,2)
+         END AS rolling_avg_3d
+         FROM CTE1
+
+--bài 6
+
