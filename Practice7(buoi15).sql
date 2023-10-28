@@ -56,4 +56,32 @@ SELECT user_id
          FROM CTE1
 
 --bài 6
+SELECT
+ COUNT (case when time_between  <=CAST( '00:10:00' AS TIME) THEN amount END) AS payment_count
+ FROM (SELECT 
+    merchant_id
+    , credit_card_id	
+    , transaction_timestamp
+    , amount
+    , LAG(transaction_timestamp) OVER(PARTITION BY merchant_id
+              , credit_card_id, amount	) AS trans_time
+    ,   transaction_timestamp - LAG(transaction_timestamp) OVER(PARTITION BY merchant_id
+              , credit_card_id, amount)	 AS time_between
+FROM transactions) AS SUBTABLE
+
+--BÀI 7
+
+SELECT category
+  , product
+   , DENSE_RANK() OVER(PARTITION BY category ORDER BY total_spend DESC)
+   , total_spend
+FROM (
+SELECT 
+  category
+  , product
+  , spend
+  , SUM(spend) OVER(PARTITION BY category, product ORDER BY category) AS total_spend
+FROM product_spend) AS table1
+WHERE DENSE_RANK() OVER(PARTITION BY category ORDER BY total_spend DESC)
+GROUP BY category , product, total_spend
 
