@@ -70,10 +70,9 @@ SELECT
 FROM transactions) AS SUBTABLE
 
 --BÀI 7
-
-SELECT category
+WITH CTE1 AS (SELECT category
   , product
-   , DENSE_RANK() OVER(PARTITION BY category ORDER BY total_spend DESC)
+   , DENSE_RANK() OVER(PARTITION BY category ORDER BY total_spend DESC) AS rank
    , total_spend
 FROM (
 SELECT 
@@ -82,6 +81,31 @@ SELECT
   , spend
   , SUM(spend) OVER(PARTITION BY category, product ORDER BY category) AS total_spend
 FROM product_spend) AS table1
-WHERE DENSE_RANK() OVER(PARTITION BY category ORDER BY total_spend DESC)
 GROUP BY category , product, total_spend
+  )
+SELECT category
+  , product
+  ,total_spend
+FROM CTE1
+WHERE rank <3
 
+--bài 8
+WITH CTE1 AS (SELECT * 
+FROM artists
+INNER JOIN songs
+ON artists.artist_id= songs.artist_id
+INNER JOIN global_song_rank
+ON global_song_rank.song_id = songs.song_id
+ORDER BY name, rank)
+,
+ CTE2 AS (SELECT artist_name
+     , COUNT(artist_name) 
+      , DENSE_RANK() OVER(ORDER BY COUNT(artist_name) DESC) AS artist_rank
+  FROM CTE1
+  WHERE rank < 11
+  GROUP BY artist_name) 
+  
+SELECT artist_name
+        , artist_rank
+FROM CTE2 
+WHERE artist_rank <6
