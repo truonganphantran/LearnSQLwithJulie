@@ -6,6 +6,7 @@ SELECT *
 FROM (SELECT
 EXTRACT(MONTH FROM shipped_at) AS MONTH
 ,EXTRACT(YEAR FROM shipped_at) AS YEAR
+,FORMAT_DATE('%Y-%m', DATE (created_at)) as month_year --sửa lại chỗ này
 , COUNT (DISTINCT user_id) AS total_customer
 , COUNT (order_id) AS total_order 
 FROM bigquery-public-data.thelook_ecommerce.orders
@@ -72,7 +73,27 @@ WHERE   gender = 'M'
         OR  age = (SELECT MIN (age) 
                 FROM bigquery-public-data.thelook_ecommerce.users
                 WHERE gender = 'M' ) )
-
+--cách ngắn hơn
+    SELECT
+first_name,
+last_name,
+gender,
+MIN(age) OVER(PARTITION BY gender) AS youngest_age
+FROM `bigquery-public-data.thelook_ecommerce.users` 
+WHERE DATE(created_at) BETWEEN '2019-01-01' AND '2022-04-30'
+AND age IN (SELECT MIN(age) 
+             FROM `bigquery-public-data.thelook_ecommerce.users`)
+UNION ALL
+SELECT
+first_name,
+last_name,
+gender,
+MAX(age) OVER(PARTITION BY gender) AS oldest_age
+FROM `bigquery-public-data.thelook_ecommerce.users` 
+WHERE DATE(created_at) BETWEEN '2019-01-01' AND '2022-04-30'
+AND age IN (SELECT MAX(age) 
+             FROM `bigquery-public-data.thelook_ecommerce.users`)
+ORDER BY youngest_age
 
       
 /*4.Top 5 sản phẩm mỗi tháng.
@@ -98,6 +119,30 @@ SELECT  *
 FROM table_1
 WHERE RANK <6
 
+
+      --sửa
+
+with table_ as (SELECT  FORMAT_DATE('%Y-%m', DATE (created_at)) as month_year
+        ,items.product_id
+        , name as product_name
+      ,  sale_price
+      ,  cost
+      ,  sale_price - cost AS  profit
+, SUM (sale_price - cost) OVER (PARTITION BY items.product_id,  FORMAT_DATE('%Y-%m', DATE (created_at)) ) as sum_profit
+FROM bigquery-public-data.thelook_ecommerce.products AS prod
+INNER JOIN bigquery-public-data.thelook_ecommerce.order_items AS items
+ON prod.id = items.product_id
+WHERE  status = 'Complete' 
+      AND shipped_at >= '2019-01-01'
+      AND shipped_at <= '2022-04-30') 
+, table_1 AS (SELECT  *, DENSE_RANK () over(PARTITION BY month_year ORDER BY sum_profit DESC ) AS RANK 
+FROM  table_)
+SELECT  *
+FROM table_1
+WHERE RANK <6
+
+
+      
 /5*Thống kê tổng doanh thu theo ngày của từng danh mục sản phẩm (category) trong 3 tháng qua ( giả sử ngày hiện tại là 15/4/2022)
 Output: dates (yyyy-mm-dd), product_categories, revenue
 */
