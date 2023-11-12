@@ -39,3 +39,28 @@ SELECT
 FROM table_sum_2
 
 
+
+
+  
+--BÀI 2
+--Tạo retention cohort analysis.
+
+WITH table_2 as (SELECT *
+            , FORMAT_DATE('%Y-%m', DATE (first_order_month )) as first_month
+            , DATE_DIFF ( cast (created_at as datetime ), cast (first_order_month  as datetime) , MONTH)  AS monthdiff
+FROM (SELECT 
+            user_id
+            , created_at
+            , MIN (created_at) OVER (PARTITION BY user_id) as first_order_month 
+        FROM bigquery-public-data.thelook_ecommerce.order_items
+    ) as table_1
+)
+SELECT first_month 
+        , FORMAT ('%s%%', CAST(ROUND (COUNT (DISTINCT user_id)*100/COUNT (DISTINCT user_id),2) AS STRING) ) as rate_1st_month
+        , FORMAT ('%s%%', CAST(ROUND (COUNT (DISTINCT (CASE WHEN monthdiff = 1 THEN user_id END))*100/COUNT (DISTINCT user_id),2) AS STRING) ) as rate_2nd_month
+        , FORMAT ('%s%%', CAST(ROUND (COUNT (DISTINCT (CASE WHEN monthdiff = 2 THEN user_id END))*100/COUNT (DISTINCT user_id),2) AS STRING) ) as rate_3rd_month
+        , FORMAT ('%s%%', CAST(ROUND (COUNT (DISTINCT (CASE WHEN monthdiff = 3 THEN user_id END))*100/COUNT (DISTINCT user_id),2) AS STRING) ) as rate_4th_month
+FROM table_2
+GROUP BY first_month
+ORDER BY first_month 
+
